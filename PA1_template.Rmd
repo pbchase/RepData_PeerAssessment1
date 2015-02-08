@@ -1,5 +1,6 @@
 ---
 title: "Reproducible Research: Peer Assessment 1"
+author: "Philip Chase"
 output: 
   html_document:
     keep_md: true
@@ -8,11 +9,55 @@ output:
 
 ## Loading and preprocessing the data
 
+The source data is available from https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip The zip file has been included in this repository for you convenience.
 
+To use the data, unzip the provided file and load the data into a dataframe.
+
+```{r}
+echo=TRUE
+unzip("activity.zip")
+activityData <- read.csv("activity.csv")
+```
+
+Inspect the data to determine if it loaded correctly
+
+```{r}
+str(activityData)
+```
+
+read.csv interpreted the dates as factors.  That might not be the most useful data format.  To fix this re-read the data specifying the datatypes for each column.  Then convert the 'date' character string to a POSIXct date
+
+```{r}
+library(lubridate)
+colClasses <- c("integer", "character", "integer")
+activityData <- read.csv("activity.csv", colClasses=colClasses)
+str(activityData)
+activityData$date <- ymd(activityData$date)
+str(activityData)
+head(activityData,20)
+```
+
+NAs need to be marked as such.  In this data they appear as the string "NA".  Modify the read.csv call as such.
+
+```{r}
+library(lubridate)
+colClasses <- c("integer", "character", "integer")
+activityData <- read.csv("activity.csv", colClasses=colClasses, na.strings="NA")
+activityData$date <- ymd(activityData$date)
+str(activityData)
+```
 
 ## What is mean total number of steps taken per day?
 
+To determine the mean total number of steps per day, first sum the steps taken each day.  Then take the mean of that value excluding NAs as some days show no activity at all.
 
+```{r}
+library(dplyr)
+total_steps_by_date <- activityData %>% group_by(date) %>% summarise(total_steps=sum(steps))
+
+mean(total_steps_by_date$total_steps, na.rm = TRUE)
+
+```
 
 ## What is the average daily activity pattern?
 
