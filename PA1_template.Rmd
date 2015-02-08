@@ -25,19 +25,9 @@ Inspect the data to determine if it loaded correctly
 str(activityData)
 ```
 
-read.csv interpreted the dates as factors.  That might not be the most useful data format.  To fix this re-read the data specifying the datatypes for each column.  Then convert the 'date' character string to a POSIXct date
+read.csv interpreted the dates as factors.  That might not be the most useful data format.  To fix this re-read the data specifying the datatypes for each column.  Then convert the 'date' character string to a POSIXct date.
 
-```{r}
-library(lubridate)
-colClasses <- c("integer", "character", "integer")
-activityData <- read.csv("activity.csv", colClasses=colClasses)
-str(activityData)
-activityData$date <- ymd(activityData$date)
-str(activityData)
-head(activityData,20)
-```
-
-NAs need to be marked as such.  In this data they appear as the string "NA".  Modify the read.csv call as such.
+Also make sure NAs are handled correctly.  In this data they appear as the string "NA".
 
 ```{r}
 library(lubridate)
@@ -49,14 +39,31 @@ str(activityData)
 
 ## What is mean total number of steps taken per day?
 
-To determine the mean total number of steps per day, first sum the steps taken each day.  Then take the mean of that value excluding NAs as some days show no activity at all.
+To determine the mean total number of steps per day, first sum the steps taken each day.  
 
-```{r}
+```{r, message=FALSE}
 library(dplyr)
 total_steps_by_date <- activityData %>% group_by(date) %>% summarise(total_steps=sum(steps))
+```
 
+The histogram below shows the distribution of steps made in a day.  The mean value, `r trunc(mean(total_steps_by_date$total_steps, na.rm = TRUE))`, and median value, `r median(total_steps_by_date$total_steps, na.rm = TRUE)`, are represented by the green line
+
+```{r}
+library(ggplot2)
+
+ggplot(data=total_steps_by_date, aes(x=total_steps)) + 
+  geom_histogram(binwidth=diff(range(total_steps_by_date$total_steps, na.rm = TRUE))/10, fill="grey") +
+  labs(title="Distribution of Daily Step Count in Human Activity Data") +
+  xlab("Total steps per day") +
+  ylab("Count") +
+  geom_vline(xintercept = mean(total_steps_by_date$total_steps, na.rm = TRUE), colour="green")   
+```
+
+The precise values for mean and median numbers of steps taken per day are shown below
+
+````{r} 
 mean(total_steps_by_date$total_steps, na.rm = TRUE)
-
+median(total_steps_by_date$total_steps, na.rm = TRUE)
 ```
 
 ## What is the average daily activity pattern?
