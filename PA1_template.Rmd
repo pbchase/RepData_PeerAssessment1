@@ -46,7 +46,12 @@ library(dplyr)
 total_steps_by_date <- activityData %>% group_by(date) %>% summarise(total_steps=sum(steps))
 ```
 
-The histogram below shows the distribution of steps made in a day.  The mean value, `r trunc(mean(total_steps_by_date$total_steps, na.rm = TRUE))`, and median value, `r median(total_steps_by_date$total_steps, na.rm = TRUE)`, are represented by the green line
+````{r echo=FALSE,hide=TRUE}
+mean_steps <- round(mean(total_steps_by_date$total_steps, na.rm = TRUE))
+median_steps <- median(total_steps_by_date$total_steps, na.rm = TRUE)
+```
+
+The histogram below shows the distribution of steps made in a day.  The mean value, `r mean_steps`, and median value, `r median_steps`, are represented by the green line.
 
 ```{r}
 library(ggplot2)
@@ -59,12 +64,6 @@ ggplot(data=total_steps_by_date, aes(x=total_steps)) +
   geom_vline(xintercept = mean(total_steps_by_date$total_steps, na.rm = TRUE), colour="green")   
 ```
 
-The precise values for mean and median numbers of steps taken per day are shown below
-
-````{r} 
-mean(total_steps_by_date$total_steps, na.rm = TRUE)
-median(total_steps_by_date$total_steps, na.rm = TRUE)
-```
 
 ## What is the average daily activity pattern?
 
