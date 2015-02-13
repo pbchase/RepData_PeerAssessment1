@@ -79,15 +79,25 @@ summary(average_steps_by_interval)
 str(average_steps_by_interval)
 ```
 
-They daily activity can be represented with histogram of step count in each interval
+They daily activity can be represented with a time series plot of average step count in each interval.
 
 ```{r}
 library(ggplot2)
 
-qplot(interval, average_steps, data=average_steps_by_interval) +
-  geom_smooth(stat='smooth')
+qplot(interval, average_steps, data=average_steps_by_interval, geom='line', xlab="Time Interval",
+      ylab="Average steps", main="Average Steps in Each Time Interval Across All Days")
 
 ```
+
+The time interval with the maximum average activity can be determined by filtering for the row the maximum activity.
+
+```{r hide=TRUE}
+maximum_average_activity_df <- filter(average_steps_by_interval, average_steps == max(average_steps))
+interval_with_maximum_average_activity <- as.vector(maximum_average_activity_df$interval)
+interval_with_maximum_average_activity
+```
+
+The maximum average activity occurs on time interval `r  interval_with_maximum_average_activity`.
 
 ## Imputing missing values
 
