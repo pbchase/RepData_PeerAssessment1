@@ -43,30 +43,30 @@ To determine the mean total number of steps per day, first sum the steps taken e
 
 ```{r, message=FALSE}
 library(dplyr)
-total_steps_by_date <- activityData %>% group_by(date) %>% summarise(total_steps=sum(steps))
+total_steps_by_date <- activityData %>% group_by(date) %>% summarise(total_steps=sum(steps, na.rm=TRUE))
 ```
 
 ````{r echo=FALSE,hide=TRUE}
-mean_steps <- round(mean(total_steps_by_date$total_steps, na.rm = TRUE))
-median_steps <- median(total_steps_by_date$total_steps, na.rm = TRUE)
+mean_steps <- round(mean(total_steps_by_date$total_steps))
+median_steps <- median(total_steps_by_date$total_steps)
 ```
 
-The histogram below shows the distribution of steps made in a day.  The mean value, `r mean_steps`, and median value, `r median_steps`, are represented by the green line.
+The histogram below shows the distribution of steps made in a day.  The mean value, `r mean_steps`, is represented by the green line while the median value, `r median_steps`, is represented by the blue line.
 
 ```{r}
 library(ggplot2)
 
 ggplot(data=total_steps_by_date, aes(x=total_steps)) + 
-  geom_histogram(binwidth=diff(range(total_steps_by_date$total_steps, na.rm = TRUE))/10, fill="grey") +
+  geom_histogram(binwidth=diff(range(total_steps_by_date$total_steps))/10, fill="grey") +
   labs(title="Distribution of Daily Step Count in Human Activity Data") +
   xlab("Total steps per day") +
   ylab("Count") +
-  geom_vline(xintercept = mean(total_steps_by_date$total_steps, na.rm = TRUE), colour="green")   
+  geom_vline(xintercept = mean(total_steps_by_date$total_steps), colour="green")   +
+  geom_vline(xintercept = median(total_steps_by_date$total_steps), colour="blue")
 ```
 
 
 ## What is the average daily activity pattern?
-
 
 
 ## Imputing missing values
