@@ -68,6 +68,26 @@ ggplot(data=total_steps_by_date, aes(x=total_steps)) +
 
 ## What is the average daily activity pattern?
 
+A daily pattern of activity can be determined by grouping the data by the daily time intervals
+
+To determine the mean total number of steps per day, first sum the steps taken each day.  As NA values appear in every time interval at some point in the data they must be removed to get the sum of the steps in each interval.
+
+```{r, message=FALSE}
+library(dplyr)
+average_steps_by_interval <- activityData %>% group_by(interval) %>% summarise(average_steps=mean(steps, na.rm=TRUE))
+summary(average_steps_by_interval)
+str(average_steps_by_interval)
+```
+
+They daily activity can be represented with histogram of step count in each interval
+
+```{r}
+library(ggplot2)
+
+qplot(interval, average_steps, data=average_steps_by_interval) +
+  geom_smooth(stat='smooth')
+
+```
 
 ## Imputing missing values
 
