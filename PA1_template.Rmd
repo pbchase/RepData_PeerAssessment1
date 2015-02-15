@@ -167,7 +167,7 @@ library(ggplot2)
 
 ggplot(data=total_steps_by_date, aes(x=total_steps)) +
   geom_histogram(binwidth=diff(range(total_steps_by_date$total_steps))/10, fill="grey") +
-  labs(title="Distribution of Daily Step Count in Human Activity Data with Missing Data Imputed") +
+  labs(title="Distribution of Daily Step Count with Missing Data Imputed") +
   xlab("Total steps per day") +
   ylab("Count") +
   geom_vline(xintercept = mean(total_steps_by_date$total_steps), colour="green")   +
