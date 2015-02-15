@@ -1,10 +1,5 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-author: "Philip Chase"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
+Philip Chase  
 
 
 ## Loading and preprocessing the data
@@ -60,12 +55,14 @@ To determine the mean total number of steps per day, first sum the steps taken e
 
 ```r
 library(dplyr)
-total_steps_by_date <- na.omit(activityData) %>% group_by(date) %>% summarise(total_steps=sum(steps, na.rm=TRUE))
+total_steps_by_date <- na.omit(activityData) %>% 
+  group_by(date) %>% 
+  summarise(total_steps=sum(steps, na.rm=TRUE))
 ```
 
 
 
-The histogram below shows the distribution of steps made in a day.  The mean value, 1.0766 &times; 10<sup>4</sup>, is represented by the green line while the median value, 10765, is represented by the blue line.
+The histogram below shows the distribution of steps made in a day.  The mean value, 1.0766\times 10^{4}, is represented by the green line while the median value, 10765, is represented by the blue line.
 
 
 ```r
@@ -80,7 +77,7 @@ ggplot(data=total_steps_by_date, aes(x=total_steps)) +
   geom_vline(xintercept = median(total_steps_by_date$total_steps), colour="blue")
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
 
 
 ## What is the average daily activity pattern?
@@ -92,7 +89,9 @@ To determine the mean total number of steps per day, first sum the steps taken e
 
 ```r
 library(dplyr)
-average_steps_by_interval <- activityData %>% group_by(interval) %>% summarise(average_steps=mean(steps, na.rm=TRUE))
+average_steps_by_interval <- activityData %>% 
+  group_by(interval) %>% 
+  summarise(average_steps=mean(steps, na.rm=TRUE))
 summary(average_steps_by_interval)
 ```
 
@@ -127,7 +126,7 @@ qplot(interval, average_steps, data=average_steps_by_interval, geom='line', xlab
       ylab="Average steps", main="Average Steps in Each Time Interval Across All Days")
 ```
 
-![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png) 
 
 The time interval with the maximum average activity can be determined by filtering for the row the maximum activity.
 
@@ -184,7 +183,9 @@ We can characterize the missing data with histograms showing where it appears th
 missingActivity <- activityData %>% filter(is.na(steps))
 missingActivity$steps <- c(1)
 
-missing_steps_by_interval <- missingActivity %>% group_by(interval) %>% summarise(sum_steps=sum(steps, na.rm=TRUE))
+missing_steps_by_interval <- missingActivity %>% 
+  group_by(interval) %>% 
+  summarise(sum_steps=sum(steps, na.rm=TRUE))
 summary(missing_steps_by_interval)
 ```
 
@@ -199,7 +200,9 @@ summary(missing_steps_by_interval)
 ```
 
 ```r
-missing_steps_by_date <- missingActivity %>% group_by(date) %>% summarise(sum_steps=sum(steps, na.rm=TRUE))
+missing_steps_by_date <- missingActivity %>% 
+  group_by(date) %>% 
+  summarise(sum_steps=sum(steps, na.rm=TRUE))
 summary(missing_steps_by_date)
 ```
 
@@ -246,8 +249,12 @@ To impute the missing data, we can replace each steps NA value set the average n
 
 ```r
 imputedActivity <- activityData
-imputedActivity$steps <- ifelse(is.na(imputedActivity$steps), average_steps_by_interval$average_steps[average_steps_by_interval$interval==imputedActivity$interval], imputedActivity$steps)
-imputedActivity$steps <- ifelse(is.na(imputedActivity$steps), average_steps_by_interval$average_steps, imputedActivity$steps)
+imputedActivity$steps <- ifelse(is.na(imputedActivity$steps), 
+  average_steps_by_interval$average_steps[average_steps_by_interval$interval==imputedActivity$interval], 
+  imputedActivity$steps)
+imputedActivity$steps <- ifelse(is.na(imputedActivity$steps), 
+  average_steps_by_interval$average_steps, 
+  imputedActivity$steps)
 summary(imputedActivity)
 ```
 
@@ -277,12 +284,14 @@ With this revised data set we can rerun the earlier plots
 
 ```r
 library(dplyr)
-total_steps_by_date <- imputedActivity %>% group_by(date) %>% summarise(total_steps=sum(steps, na.rm=TRUE))
+total_steps_by_date <- imputedActivity %>% 
+  group_by(date) %>% 
+  summarise(total_steps=sum(steps, na.rm=TRUE))
 ```
 
 
 
-The histogram below shows the distribution of steps made in a day.  The mean value, 1.0766 &times; 10<sup>4</sup>, is represented by the green line while the median value, 1.0766189 &times; 10<sup>4</sup>, is represented by the blue line.
+The histogram below shows the distribution of steps made in a day.  The mean value, 1.0766\times 10^{4}, is represented by the green line while the median value, 1.0766189\times 10^{4}, is represented by the blue line.
 
 
 ```r
@@ -297,7 +306,7 @@ ggplot(data=total_steps_by_date, aes(x=total_steps)) +
   geom_vline(xintercept = median(total_steps_by_date$total_steps), colour="blue")
 ```
 
-![plot of chunk unnamed-chunk-15](figure/unnamed-chunk-15-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-15-1.png) 
 
 As the imputation of missing data used average values for each interval, it had no effect on the mean or median values of steps per day.
 
@@ -309,7 +318,9 @@ To analyze differences between weekends and weekdays we need to use the non-impu
 ```r
 activityData$dayType <- ifelse(wday(activityData$date) %in% c(1,7), "Weekend", "Weekday")
 
-total_steps_by_daytype_and_interval <- na.omit(activityData) %>% group_by(dayType, interval) %>% summarise(average_steps=mean(steps, na.rm=TRUE))
+total_steps_by_daytype_and_interval <- na.omit(activityData) %>% 
+  group_by(dayType, interval) %>% 
+  summarise(average_steps=mean(steps, na.rm=TRUE))
 ```
 
 With the data properly grouped, we can make plots of the daily activity by day-type (weekend vs weekday) and time interval.
@@ -321,6 +332,6 @@ qplot(interval, average_steps, data=total_steps_by_daytype_and_interval,
       main="Average Steps in Each Time Interval Across Weekends / Weekdays")
 ```
 
-![plot of chunk unnamed-chunk-17](figure/unnamed-chunk-17-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-17-1.png) 
 
 The data does show a different activity pattern between weekends and weekdays.  The wearer rises earlier on weekedays and is more sedentary in the mid-day of weekdays.  Walking also drops off earlier in the evening on weekdays than the weekend.

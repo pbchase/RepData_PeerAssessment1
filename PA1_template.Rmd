@@ -42,10 +42,12 @@ To determine the mean total number of steps per day, first sum the steps taken e
 
 ```{r, message=FALSE}
 library(dplyr)
-total_steps_by_date <- na.omit(activityData) %>% group_by(date) %>% summarise(total_steps=sum(steps, na.rm=TRUE))
+total_steps_by_date <- na.omit(activityData) %>% 
+  group_by(date) %>% 
+  summarise(total_steps=sum(steps, na.rm=TRUE))
 ```
 
-````{r echo=FALSE,hide=TRUE}
+```{r echo=FALSE,hide=TRUE}
 mean_steps <- round(mean(total_steps_by_date$total_steps))
 median_steps <- median(total_steps_by_date$total_steps)
 ```
@@ -73,7 +75,9 @@ To determine the mean total number of steps per day, first sum the steps taken e
 
 ```{r, message=FALSE}
 library(dplyr)
-average_steps_by_interval <- activityData %>% group_by(interval) %>% summarise(average_steps=mean(steps, na.rm=TRUE))
+average_steps_by_interval <- activityData %>% 
+  group_by(interval) %>% 
+  summarise(average_steps=mean(steps, na.rm=TRUE))
 summary(average_steps_by_interval)
 str(average_steps_by_interval)
 ```
@@ -115,10 +119,14 @@ We can characterize the missing data with histograms showing where it appears th
 missingActivity <- activityData %>% filter(is.na(steps))
 missingActivity$steps <- c(1)
 
-missing_steps_by_interval <- missingActivity %>% group_by(interval) %>% summarise(sum_steps=sum(steps, na.rm=TRUE))
+missing_steps_by_interval <- missingActivity %>% 
+  group_by(interval) %>% 
+  summarise(sum_steps=sum(steps, na.rm=TRUE))
 summary(missing_steps_by_interval)
 
-missing_steps_by_date <- missingActivity %>% group_by(date) %>% summarise(sum_steps=sum(steps, na.rm=TRUE))
+missing_steps_by_date <- missingActivity %>% 
+  group_by(date) %>% 
+  summarise(sum_steps=sum(steps, na.rm=TRUE))
 summary(missing_steps_by_date)
 missing_steps_by_date
 
@@ -131,8 +139,12 @@ To impute the missing data, we can replace each steps NA value set the average n
 
 ```{r}
 imputedActivity <- activityData
-imputedActivity$steps <- ifelse(is.na(imputedActivity$steps), average_steps_by_interval$average_steps[average_steps_by_interval$interval==imputedActivity$interval], imputedActivity$steps)
-imputedActivity$steps <- ifelse(is.na(imputedActivity$steps), average_steps_by_interval$average_steps, imputedActivity$steps)
+imputedActivity$steps <- ifelse(is.na(imputedActivity$steps), 
+  average_steps_by_interval$average_steps[average_steps_by_interval$interval==imputedActivity$interval], 
+  imputedActivity$steps)
+imputedActivity$steps <- ifelse(is.na(imputedActivity$steps), 
+  average_steps_by_interval$average_steps, 
+  imputedActivity$steps)
 summary(imputedActivity)
 str(imputedActivity)
 ```
@@ -141,7 +153,9 @@ With this revised data set we can rerun the earlier plots
 
 ```{r, message=FALSE}
 library(dplyr)
-total_steps_by_date <- imputedActivity %>% group_by(date) %>% summarise(total_steps=sum(steps, na.rm=TRUE))
+total_steps_by_date <- imputedActivity %>% 
+  group_by(date) %>% 
+  summarise(total_steps=sum(steps, na.rm=TRUE))
 ```
 
 ````{r echo=FALSE,hide=TRUE}
@@ -172,7 +186,9 @@ To analyze differences between weekends and weekdays we need to use the non-impu
 ```{r}
 activityData$dayType <- ifelse(wday(activityData$date) %in% c(1,7), "Weekend", "Weekday")
 
-total_steps_by_daytype_and_interval <- na.omit(activityData) %>% group_by(dayType, interval) %>% summarise(average_steps=mean(steps, na.rm=TRUE))
+total_steps_by_daytype_and_interval <- na.omit(activityData) %>% 
+  group_by(dayType, interval) %>% 
+  summarise(average_steps=mean(steps, na.rm=TRUE))
 ```
 
 With the data properly grouped, we can make plots of the daily activity by day-type (weekend vs weekday) and time interval.
