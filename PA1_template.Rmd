@@ -164,6 +164,24 @@ ggplot(data=total_steps_by_date, aes(x=total_steps)) +
   geom_vline(xintercept = median(total_steps_by_date$total_steps), colour="blue")
 ```
 
-As the imputation of missing data used average values for each interval, it had now affect on the mean or median values of steps per day.
+As the imputation of missing data used average values for each interval, it had no effect on the mean or median values of steps per day.
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+To analyze differences between weekends and weekdays we need to use the non-imputated data as the imputation strategy averages across weekdays and weekends.  Further, missing date should be removed from the activityData dataframe before subsetting the data by date/weekday.
+
+```{r}
+activityData$dayType <- ifelse(wday(activityData$date) %in% c(1,7), "Weekend", "Weekday")
+
+total_steps_by_daytype_and_interval <- na.omit(activityData) %>% group_by(dayType, interval) %>% summarise(average_steps=mean(steps, na.rm=TRUE))
+```
+
+With the data properly grouped, we can make plots of the daily activity by day-type (weekend vs weekday) and time interval.
+
+```{r}
+qplot(interval, average_steps, data=total_steps_by_daytype_and_interval, 
+      facets = dayType ~ ., geom='line', xlab="Time Interval", ylab="Average steps", 
+      main="Average Steps in Each Time Interval Across Weekends / Weekdays")
+```
+
+The data does show a different activity pattern between weekends and weekdays.  The wearer rises earlier on weekedays and is more sedentary in the mid-day of weekdays.  Walking also drops off earlier in the evening on weekdays than the weekend.
