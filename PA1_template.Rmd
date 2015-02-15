@@ -101,6 +101,69 @@ The maximum average activity occurs on time interval `r  interval_with_maximum_a
 
 ## Imputing missing values
 
+Missing data in the raw data can adversely affect some analyses.  We can quantify this missing data and, in some cases, correct for its effects.
 
+```{r}
+summary(activityData)
+str(activityData)
+```
+
+This data set contains `r sum(is.na(activityData))` NAs across `r nrow(activityData)` observations.
+
+We can characterize the missing data with histograms showing where it appears throughout the day and on which days it appears.  We can select only the rows with missing data, replace its value with a 1 and create plots similar to those above.
+
+```{r}
+missingActivity <- activityData %>% filter(is.na(steps))
+missingActivity$steps <- c(1)
+
+missing_steps_by_interval <- missingActivity %>% group_by(interval) %>% summarise(sum_steps=sum(steps, na.rm=TRUE))
+summary(missing_steps_by_interval)
+
+missing_steps_by_date <- missingActivity %>% group_by(date) %>% summarise(sum_steps=sum(steps, na.rm=TRUE))
+summary(missing_steps_by_date)
+missing_steps_by_date
+
+24*60 == 288*5
+```
+
+Note that 288 is the number of 5-minute data intervals in a day.  This shows data is missing on well-defined date boundaries.  Where missing data appears, it is missing for the entire date.  Where data is present it is present for the entire day.
+
+To impute the missing data, we can replace each steps NA value set the average number of steps taken in the time interval. This will replace each missing day with an "average day". I computed the average_steps_by_interval object above.  I'll reuse that here.
+
+```{r}
+imputedActivity <- activityData
+imputedActivity$steps <- ifelse(is.na(imputedActivity$steps), average_steps_by_interval$average_steps[average_steps_by_interval$interval==imputedActivity$interval], imputedActivity$steps)
+imputedActivity$steps <- ifelse(is.na(imputedActivity$steps), average_steps_by_interval$average_steps, imputedActivity$steps)
+summary(imputedActivity)
+str(imputedActivity)
+```
+
+With this revised data set we can rerun the earlier plots
+
+```{r, message=FALSE}
+library(dplyr)
+total_steps_by_date <- imputedActivity %>% group_by(date) %>% summarise(total_steps=sum(steps, na.rm=TRUE))
+```
+
+````{r echo=FALSE,hide=TRUE}
+mean_steps <- round(mean(total_steps_by_date$total_steps))
+median_steps <- median(total_steps_by_date$total_steps)
+```
+
+The histogram below shows the distribution of steps made in a day.  The mean value, `r mean_steps`, is represented by the green line while the median value, `r median_steps`, is represented by the blue line.
+
+```{r}
+library(ggplot2)
+
+ggplot(data=total_steps_by_date, aes(x=total_steps)) +
+  geom_histogram(binwidth=diff(range(total_steps_by_date$total_steps))/10, fill="grey") +
+  labs(title="Distribution of Daily Step Count in Human Activity Data with Missing Data Imputed") +
+  xlab("Total steps per day") +
+  ylab("Count") +
+  geom_vline(xintercept = mean(total_steps_by_date$total_steps), colour="green")   +
+  geom_vline(xintercept = median(total_steps_by_date$total_steps), colour="blue")
+```
+
+The imputation shifted the mean and median slight upward as 8 days with zero steps were removed replaced with average data.  
 
 ## Are there differences in activity patterns between weekdays and weekends?
