@@ -14,7 +14,6 @@ The source data is available from https://d396qusza40orc.cloudfront.net/repdata%
 To use the data, unzip the provided file and load the data into a dataframe.
 
 ```{r}
-echo=TRUE
 unzip("activity.zip")
 activityData <- read.csv("activity.csv")
 ```

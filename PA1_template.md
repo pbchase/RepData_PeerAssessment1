@@ -15,7 +15,6 @@ To use the data, unzip the provided file and load the data into a dataframe.
 
 
 ```r
-echo=TRUE
 unzip("activity.zip")
 activityData <- read.csv("activity.csv")
 ```
