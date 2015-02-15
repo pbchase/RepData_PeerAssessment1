@@ -205,9 +205,6 @@ summary(missing_steps_by_date)</code></pre>
 <p>To impute the missing data, we can replace each steps NA value set the average number of steps taken in the time interval. This will replace each missing day with an “average day”. I computed the average_steps_by_interval object above. I’ll reuse that here.</p>
 <pre class="r"><code>imputedActivity &lt;- activityData
 imputedActivity$steps &lt;- ifelse(is.na(imputedActivity$steps), 
-  average_steps_by_interval$average_steps[average_steps_by_interval$interval==imputedActivity$interval], 
-  imputedActivity$steps)
-imputedActivity$steps &lt;- ifelse(is.na(imputedActivity$steps), 
   average_steps_by_interval$average_steps, 
   imputedActivity$steps)
 summary(imputedActivity)</code></pre>

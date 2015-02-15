@@ -140,9 +140,6 @@ To impute the missing data, we can replace each steps NA value set the average n
 ```{r}
 imputedActivity <- activityData
 imputedActivity$steps <- ifelse(is.na(imputedActivity$steps), 
-  average_steps_by_interval$average_steps[average_steps_by_interval$interval==imputedActivity$interval], 
-  imputedActivity$steps)
-imputedActivity$steps <- ifelse(is.na(imputedActivity$steps), 
   average_steps_by_interval$average_steps, 
   imputedActivity$steps)
 summary(imputedActivity)
