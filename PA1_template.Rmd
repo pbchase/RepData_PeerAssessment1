@@ -43,7 +43,7 @@ To determine the mean total number of steps per day, first sum the steps taken e
 
 ```{r, message=FALSE}
 library(dplyr)
-total_steps_by_date <- activityData %>% group_by(date) %>% summarise(total_steps=sum(steps, na.rm=TRUE))
+total_steps_by_date <- na.omit(activityData) %>% group_by(date) %>% summarise(total_steps=sum(steps, na.rm=TRUE))
 ```
 
 ````{r echo=FALSE,hide=TRUE}
@@ -164,6 +164,6 @@ ggplot(data=total_steps_by_date, aes(x=total_steps)) +
   geom_vline(xintercept = median(total_steps_by_date$total_steps), colour="blue")
 ```
 
-The imputation shifted the mean and median slight upward as 8 days with zero steps were removed replaced with average data.  
+As the imputation of missing data used average values for each interval, it had now affect on the mean or median values of steps per day.
 
 ## Are there differences in activity patterns between weekdays and weekends?
